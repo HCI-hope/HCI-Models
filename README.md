@@ -89,7 +89,6 @@ This notebook implements **two predictive models** to classify EEG segments into
 
 One **random EEG segment** is sampled from the filtered dataset, and the model predicts **which of the 12 visual stimuli** the segment corresponds to.
 
----
 
 ### 🔬 Models Implemented
 
@@ -105,8 +104,6 @@ One **random EEG segment** is sampled from the filtered dataset, and the model p
 - Performs strongly on structured tabular EEG data
 
 
----
-
 ## 📈 Results Summary
 
 | Model | Accuracy |
@@ -117,14 +114,56 @@ One **random EEG segment** is sampled from the filtered dataset, and the model p
 > **Observation:** BPNN outperformed LSTM significantly for this dataset, suggesting that well-filtered tabular EEG features were more effectively modeled using traditional neural networks than sequence-based architectures.
 
 ---
+## 🧪 Model Inference & Pipeline Validation
 
-## 🗂️ Repository Structure
+### 📓 `Testing.ipynb`
 
-```
-├── Chebyshev_filtering.ipynb       # EEG signal preprocessing and filtering
-├── Implement_LSTM_BPNN.ipynb       # EEG intent classification using LSTM & BPNN
-└── README.md
-```
+This notebook is dedicated to **end-to-end pipeline testing and inference**, validating that the trained EEG intent recognition model functions correctly on **previously unseen EEG data**.
+
+Rather than training, this notebook focuses on **deployment-style usage** of the learned model.
+
+### 🎯 Objective
+
+To verify that the **entire EEG pipeline**—from preprocessed EEG input to final intent prediction—works reliably in a **realistic testing scenario**.
+
+The notebook performs **direction-level intent prediction** using a trained neural network.
+
+
+### 🧠 Prediction Task
+
+- **Classification Scope:** 4-Direction Intent Recognition  
+- **Classes Predicted:**  
+  - Forward  
+  - Backward  
+  - Left  
+  - Right  
+
+This represents a **collapsed directional abstraction** of the original 12-class stimulus space, suitable for practical HCI and BCI control tasks.
+
+
+### ⚙️ What the Notebook Does
+
+- Loads a **pre-trained BPNN model** (`bpnn_4direction.pkl`)
+- Loads the corresponding **feature scaler and label encoder**
+- Accepts a **new EEG sample file** (`.xlsx`) as input
+- Applies the **same preprocessing and feature alignment** used during training
+- Generates:
+  - Predicted direction label
+  - Class confidence scores
+
+This ensures **training–testing consistency**, a critical requirement for EEG-based systems.
+
+---
+
+### 🧩 Role in the Repository
+
+| Notebook | Purpose |
+|---------|---------|
+| `Chebyshev_filtering.ipynb` | Signal cleaning & feature construction |
+| `Implement_LSTM_BPNN.ipynb` | Model training & evaluation |
+| `Testing.ipynb` | **End-to-end inference & validation** |
+
+---
 
 ---
 
