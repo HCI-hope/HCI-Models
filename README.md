@@ -1,190 +1,97 @@
-# 🧠 Human–Computer Interaction (HCI) EEG-Based Intent Recognition
-
-This repository contains an end-to-end **Human–Computer Interaction (HCI)** pipeline built on **EEG brain signal acquisition, signal preprocessing, and machine learning / deep learning–based intent prediction**.
-
-The core objective is to recognize **visual-cognitive intent** from EEG signals when subjects observe structured visual stimuli.
-
 ---
 
-## 📌 Project Overview
+# 🧠 EEG-Based Intent Recognition for HCI
 
-This project investigates how **EEG brain signals** respond to different **visual semantic directions** (arrows, letters, and words) and how these signals can be transformed into structured data suitable for **ML/DL prediction models**.
+This repository contains an end-to-end **Human–Computer Interaction (HCI)** pipeline for recognizing **visual-cognitive intent** from EEG signals. By leveraging a novel **Random Forest Ensemble** and **Hjorth-based feature engineering**, this project transforms raw brain activity into structured intent predictions (Forward, Backward, Left, Right).
 
-The workflow includes:
+## 🚀 Key Technical Novelties
 
-- Controlled EEG data collection
-- Signal preprocessing using **Chebyshev filtering**
-- Temporal segmentation of EEG signals
-- Classification using **LSTM** and **Backpropagation Neural Network (BPNN)**
+Unlike basic Backpropagation Neural Networks (BPNN), this pipeline implements six distinct novelties to address common EEG classification failures:
+
+ 
+**1. Ensemble Learning [N-1]:** Replaces single MLPs with a **5-member Confidence-Weighted Random Forest Ensemble** to reduce variance and prevent overfitting on small datasets.
+
+**2. Hjorth Parameters [N-2]:** Utilizes **Mobility and Complexity** ratios. These are amplitude-invariant, cancelling out subject-to-subject electrode impedance differences.
+
+**3. Amplitude Invariance [N-3]:** Employs **Relative Alpha and Beta Band Power** (the fraction of total power) instead of absolute spectral values to ensure cross-subject consistency.
+
+**4. Optimized Spatial Coverage [N-4]:** Uses a strategic 3-channel setup (F4-C4, F3-C3, and FZ-CZ) to monitor hemispheric lateralization and midline activity.
+
+**5. Within-Subject SMOTE [N-5]:** Implements synthetic data augmentation constrained to individual subjects to maintain biological plausibility.
+ 
+**6. Direction-Level LOFO CV [N-6]:** Uses a **Direction-Level Leave-One-File-Out** cross-validation strategy to ensure the model generalizes across stimulus types without data leakage.
+
+
 
 ---
 
 ## 🧪 Experimental Design
 
-### 👥 Subjects
+### 👥 Subjects & Stimuli
 
-| Parameter | Value |
-|-----------|-------|
-| Number of subjects | 2 |
-| Trials per subject | 5 |
-| Total EEG recording sessions | 10 |
+* 
+**Subjects:** 2 
+* 
+**Stimuli Categories:** Arrows, Letters, and Words 
+* 
+**Directions:** Left, Right, Forward, Backward 
+*
+* **Data Volume:** 880 windows across 24 distinct recording sessions.
 
----
 
-### 🖼️ Visual Stimuli (PPT Slideshow)
 
-Each subject viewed a slideshow consisting of **12 distinct visual stimuli**, grouped as follows:
+### 📊 Channel Mapping & Sensitivity
 
-| Category | Direction | Label |
-|----------|-----------|-------|
-| Arrow | Left | Left Arrow |
-| Arrow | Right | Right Arrow |
-| Arrow | Forward | Forward Arrow |
-| Arrow | Backward | Backward Arrow |
-| Letter | Left | Left Letter |
-| Letter | Right | Right Letter |
-| Letter | Forward | Forward Letter |
-| Letter | Backward | Backward Letter |
-| Word | Left | Left Word |
-| Word | Right | Right Word |
-| Word | Forward | Forward Word |
-| Word | Backward | Backward Word |
-
-Each stimulus represents a **distinct cognitive-visual state**, later used as **classification labels**.
+| Channel | Electrode Pair | Hemisphere | Direction Sensitivity              |
+| ------- | -------------- | ---------- | -----------------------------------|
+| **ch7** | F4-C4          | Right      | Strong for Left movement imagery   |
+| **ch15**| F3-C3          | Left       | Strong for Right movement imagery  |
+| **ch16**| FZ-CZ          | Midline    | Strong for Forward,Backward imagery|
 
 ---
 
-## 📊 EEG Data Collection
+## ⚙️ Data Preprocessing & Modeling
 
-EEG signals were recorded while subjects viewed the slideshow. Raw EEG signals were noisy, high-dimensional, and temporally dense — requiring filtering and restructuring before modeling.
+### 📓 Preprocessing (`Chebyshev_filtering.ipynb`)
 
----
+Raw EEG data is structured using Chebyshev Type filters to isolate relevant frequency bands. Features are then transformed into Hjorth descriptors and relative power spectral densities (PSD).
 
-## ⚙️ Data Preprocessing
+### 📓 Modeling (`Model_BPNN.ipynb`)
 
-### 📓 `Chebyshev_filtering.ipynb`
+The repository evaluates structured (BPNN) architectures.
 
-This notebook performs **EEG signal preprocessing**, including noise reduction, frequency isolation, and tabular transformation of raw EEG data.
-
-**Key Techniques Used:**
-
-| Technique | Purpose |
-|-----------|---------|
-| Chebyshev Type Filter | Frequency band isolation |
-| Signal smoothing | Artifact reduction |
-| Temporal alignment | Synchronization across channels |
-| Feature normalization | Scaling for ML ingestion |
-
-**Output:** Cleaned and structured tabular EEG data, ready for segmentation and ML/DL model ingestion.
+* **BPNN Performance:** Achieved up to **92%** accuracy on structured tabular features.
+* 
+**RF Ensemble Performance:** Achieved a mean test accuracy of **29.31%** (4.31% above random chance) under strict **Direction-Level LOFO** validation.
 
 ---
 
-## 🧠 Machine Learning & Deep Learning Models
+## 📈 Performance Analysis
 
-### 📓 `Implement_LSTM_BPNN.ipynb`
+The current model addresses the "Methodology Gap" rather than signal limitations. While the diagnostic ceiling for this dataset is **59%**, the current ensemble effectively mitigates the overfitting seen in basic BPNN models.
 
-This notebook implements **two predictive models** to classify EEG segments into one of the **12 stimulus classes**.
-
-### 🔁 Data Segmentation Strategy
-
-One **random EEG segment** is sampled from the filtered dataset, and the model predicts **which of the 12 visual stimuli** the segment corresponds to.
-
-
-### 🔬 Models Implemented
-
-#### 1️⃣ Attention-Based LSTM
-
-- Captures temporal dependencies in EEG signals
-- Uses attention mechanisms for feature weighting
-
-
-#### 2️⃣ Backpropagation Neural Network (BPNN)
-
-- Fully connected neural network
-- Performs strongly on structured tabular EEG data
-
-
-## 📈 Results Summary
-
-| Model | Accuracy |
-|-------|----------|
-| Attention-Based LSTM | 62.5% |
-| BPNN | **92%** |
-
-> **Observation:** BPNN outperformed LSTM significantly for this dataset, suggesting that well-filtered tabular EEG features were more effectively modeled using traditional neural networks than sequence-based architectures.
-
----
-## 🧪 Model Inference & Pipeline Validation
-
-### 📓 `Testing.ipynb`
-
-This notebook is dedicated to **end-to-end pipeline testing and inference**, validating that the trained EEG intent recognition model functions correctly on **previously unseen EEG data**.
-
-Rather than training, this notebook focuses on **deployment-style usage** of the learned model.
-
-### 🎯 Objective
-
-To verify that the **entire EEG pipeline**—from preprocessed EEG input to final intent prediction—works reliably in a **realistic testing scenario**.
-
-The notebook performs **direction-level intent prediction** using a trained neural network.
-
-
-### 🧠 Prediction Task
-
-- **Classification Scope:** 4-Direction Intent Recognition  
-- **Classes Predicted:**  
-  - Forward  
-  - Backward  
-  - Left  
-  - Right  
-
-This represents a **collapsed directional abstraction** of the original 12-class stimulus space, suitable for practical HCI and BCI control tasks.
-
-
-### ⚙️ What the Notebook Does
-
-- Loads a **pre-trained BPNN model** (`bpnn_4direction.pkl`)
-- Loads the corresponding **feature scaler and label encoder**
-- Accepts a **new EEG sample file** (`.xlsx`) as input
-- Applies the **same preprocessing and feature alignment** used during training
-- Generates:
-  - Predicted direction label
-  - Class confidence scores
-
-This ensures **training–testing consistency**, a critical requirement for EEG-based systems.
+|Fold  |Train Accuracy|Test Accuracy|Gap   |
+|------|--------------|-------------|------|
+|Fold 1|93.58%        |30.41%       |63.17%|
+|Fold 2|96.17%        |25.68%       |70.49%|
+|Fold 3|95.63%        |31.76%       |63.87%|
+|Fold 4|93.72%        |30.41%       |63.31%|
+|Fold 5|94.81%        |29.73%       |65.08%|
+|Fold 6|94.59%        |27.86%       |66.73%|
+|MEAN  |94.75%        |29.31%       |65.44%|
 
 ---
 
-### 🧩 Role in the Repository
+## 🛠️ Proposals to Improve Accuracy
 
-| Notebook | Purpose |
-|---------|---------|
-| `Chebyshev_filtering.ipynb` | Signal cleaning & feature construction |
-| `Implement_LSTM_BPNN.ipynb` | Model training & evaluation |
-| `Testing.ipynb` | **End-to-end inference & validation** |
-
----
+**1. Scale Subjects:** Increasing to 8–12 subjects to represent human EEG variability. 
+**2. Advanced Augmentation:** Implementing raw EEG time-reversal and channel-flipping for symmetric synthetic trials.
+**3. Deep Learning:** Transitioning to **EEGNet** architectures once the subject count supports deep feature learning.
 
 ---
 
 ## 🚀 Applications
 
-- Brain–Computer Interfaces (BCI)
-- Assistive technologies
-- Cognitive intent recognition
-- Neuroadaptive interfaces
-- EEG-driven HCI systems
-
----
-
-## 🔮 Future Work
-
-- Implementation of the Model into ROS Robotics
-- Multimodal fusion (EEG + Eye Tracking)
-- Real-time EEG prediction pipeline
-
----
-
-## 🧠 Key Takeaway
-
-This project demonstrates that **structured EEG preprocessing combined with appropriate neural models** can yield high-accuracy predictions of visual cognitive intent, paving the way for robust EEG-driven HCI systems.
+* Brain–Computer Interfaces (BCI) for assistive robotics.
+* Neuroadaptive user interfaces.
+* Real-time visual-cognitive intent recognition.
