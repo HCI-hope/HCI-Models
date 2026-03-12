@@ -24,22 +24,22 @@ Unlike basic Backpropagation Neural Networks (BPNN), this pipeline implements si
 ### 📓 Modeling (`Model_BPNN(Novelty).ipynb`)
 ## 🚀 Key Technical Novelties
 
-**NOVELTY 1 — Hemispheric Asymmetry Index (HAI): What it captures: The difference in brain activation between left hemisphere (F3-C3) and right hemisphere (F4-C4) across 4 frequency bands — Theta, Alpha, Beta, Gamma. This gives 8 features total (4 DASM + 4 RASM).
+**NOVELTY 1 — Hemispheric Asymmetry Index (HAI):** What it captures: The difference in brain activation between left hemisphere (F3-C3) and right hemisphere (F4-C4) across 4 frequency bands — Theta, Alpha, Beta, Gamma. This gives 8 features total (4 DASM + 4 RASM).
    
-   **Scientific basis: This is grounded in neuroscience — left/right directional intent is encoded by contralateral hemisphere dominance. The standard approach of                        treating F3-C3 and F4-C4 as separate independent channels completely discards this relationship.
+   **Scientific basis:** This is grounded in neuroscience — left/right directional intent is encoded by contralateral hemisphere dominance. The standard approach of                        treating F3-C3 and F4-C4 as separate independent channels completely discards this relationship.
 
    
-**NOVELTY 2 — Stimulus-Type Conditioning (Dual-Branch Architecture): The cue type used in the experiment — whether the subject was shown an Arrow, a Letter, or a Word — is encoded as a one-hot vector [1,0,0], [0,1,0], or [0,0,1] and fed into a dedicated neural branch.
+**NOVELTY 2 — Stimulus-Type Conditioning (Dual-Branch Architecture):** The cue type used in the experiment — whether the subject was shown an Arrow, a Letter, or a Word — is encoded as a one-hot vector [1,0,0], [0,1,0], or [0,0,1] and fed into a dedicated neural branch.
    
-   **Scientific basis: The brain processes an arrow (visuospatial) very differently from a word (semantic/linguistic). A model blind to stimulus type is averaging                        across fundamentally different cognitive states. No prior 4-direction BCI paper has conditioned the classifier on cue modality — this is                           the strongest novelty claim.
+   **Scientific basis:** The brain processes an arrow (visuospatial) very differently from a word (semantic/linguistic). A model blind to stimulus type is averaging                        across fundamentally different cognitive states. No prior 4-direction BCI paper has conditioned the classifier on cue modality — this is                           the strongest novelty claim.
 
    
-**NOVELTY 3 — Inter-Channel Functional Connectivity: What it captures: How synchronised the three EEG channels are with each other during each 1-second window. High Left-Right correlation means both hemispheres are activating together (symmetric movement). Low or negative correlation means they're diverging (directional intent).
+**NOVELTY 3 — Inter-Channel Functional Connectivity:** What it captures: How synchronised the three EEG channels are with each other during each 1-second window. High Left-Right correlation means both hemispheres are activating together (symmetric movement). Low or negative correlation means they're diverging (directional intent).
     
-   **Scientific basis: Functional connectivity between motor cortex regions is a well-established BCI feature in research literature, but rarely applied in                               simple 3-channel frugal BCI setups.
+   **Scientific basis:** Functional connectivity between motor cortex regions is a well-established BCI feature in research literature, but rarely applied in                               simple 3-channel frugal BCI setups.
 
     
-**NOVELTY 4 — Midline Deviation Feature: How much the midline channel (FZ-CZ) deviates from the average of left and right hemispheres, per frequency band.
+**NOVELTY 4 — Midline Deviation Feature:** How much the midline channel (FZ-CZ) deviates from the average of left and right hemispheres, per frequency band.
 
 
 ## Feature Count Summary
